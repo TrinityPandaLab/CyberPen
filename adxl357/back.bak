@@ -1,0 +1,43 @@
+ while(t - tStart < 1){     
+        t = time_time();
+        readBytes(h0, STATUS, buff, 2);
+        status = buff[1];
+        
+        readBytes(h0, 0x05, buff, 2);
+        printf("%d\n",buff[1]);
+        
+        printf("%d\n", status);
+        
+        
+        if(status > 0 && status <4){
+            retnum = readFIFO(h0, &x, &y, &z, data);
+            printf("count0 = %d, x = %f  y = %f z= %f\n", count0,x*calib,y*calib,z*calib);
+            count0++;
+        }
+        
+        else if(status & 0b100){
+            printf("Overflow0 \n");
+            if(count0 > 1)break;
+            readFIFO(h0, &x, &y, &z, data);
+        }
+        
+        readBytes(h1, STATUS, buff, 2);
+        status = buff[1];
+        
+        //~ printf("%d\n", status);
+        
+        
+        if(status > 0 && status <4){
+            retnum = readFIFO(h1, &x, &y, &z, data);
+            printf("count1 = %d, x1 = %f  y1 = %f z1= %f\n", count1,x*calib,y*calib,z*calib);
+            count1++;
+        }
+        
+        else if(status & 0b100){
+            printf("Overflow1 \n");
+            if(count1 > 1) break;
+            readFIFO(h0, &x, &y, &z, data);
+        }
+        
+    }
+    printf("t = %f\n", t - tStart);
