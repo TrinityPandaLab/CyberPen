@@ -5,8 +5,8 @@ import keyboard
 
 
 flag = 1
-subject = 0
-ctr = 4
+subject = 1
+ctr = 0
 folder = "CyberPenData/"
 max_time = 3
 
@@ -14,7 +14,7 @@ subprocess.run(["sudo","killall","pigpiod"])
 
 while(flag):
     print("Run: " + str(ctr))
-    subprocess.run(["sudo","./adxl357spi","-t",str(max_time),"-s",folder + "sig" + str(subject).zfill(2)+ "_3_" + str(ctr).zfill(3) +".csv"]) 
+    subprocess.run(["sudo","./adxl357spi","-t",str(max_time),"-s",folder + "sig" + str(subject).zfill(2)+ "_1_" + str(ctr).zfill(3) +".csv"]) 
     while(True):
         x = input("y to continue, q to quit, n to rewrite: ")
         if (x == "y"):
