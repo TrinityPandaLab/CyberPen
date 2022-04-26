@@ -106,7 +106,7 @@ int readFIFO(int handle, int* x, int* y, int* z, char* data){
         readBytes(handle, FIFO, data, 10);
         
         if ((data[3]&0b10) || (data[6]&0b10) || (data[9]&0b10)) {return 0;} //Empty FIFO
-        //~ if (!(data[3]&0b01)) {return 0;} // dataset validation
+        if (!(data[3]&0b01)) {return 0;} // dataset validation
         
         *x = (int32_t)((((uint32_t)data[1])<<12)|(((uint32_t)data[2])<<4)|(((uint32_t)data[3])>>4));
         if (data[1]&0x80) *x = *x - (1<<20);
@@ -187,11 +187,11 @@ int main(int argc, char *argv[]) {
     
     // Change the Output Data Rate
     buff[0] = ODR;
-    buff[1] = 0x1; //1kHz
+    buff[1] = 0x1; //2kHz
     writeBytes(h0, buff, 2);
     
     buff[0] = ODR;
-    buff[1] = 0x1; //1kHz
+    buff[1] = 0x1; //2kHz
     writeBytes(h1, buff, 2);
     
     // Misc
@@ -245,20 +245,20 @@ int main(int argc, char *argv[]) {
         }
         
         //~ // Test if overflow 
-        //~ readBytes(h0, STATUS, buff, 2);
-        //~ status0 = buff[1];
+        readBytes(h0, STATUS, buff, 2);
+        status0 = buff[1];
     
-        //~ readBytes(h1, STATUS, buff, 2);
-        //~ status1 = buff[1];
+        readBytes(h1, STATUS, buff, 2);
+        status1 = buff[1];
         
-        //~ if(status0 == 7){
-            //~ printf("Overflow0\n");
-            //~ break;
-        //~ }
-        //~ if(status1 == 7){
-            //~ printf("Overflow1\n");
-            //~ break;
-        //~ }
+        if(status0 == 7){
+            printf("Overflow0\n");
+            break;
+        }
+        if(status1 == 7){
+            printf("Overflow1\n");
+            break;
+        }
 
         
     }

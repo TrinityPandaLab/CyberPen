@@ -187,11 +187,11 @@ int main(int argc, char *argv[]) {
     
     // Change the Output Data Rate
     buff[0] = ODR;
-    buff[1] = 0x1; //1kHz
+    buff[1] = 0x1; //2kHz
     writeBytes(h0, buff, 2);
     
     buff[0] = ODR;
-    buff[1] = 0x1; //1kHz
+    buff[1] = 0x1; //2kHz
     writeBytes(h1, buff, 2);
     
     // Misc
@@ -232,7 +232,7 @@ int main(int argc, char *argv[]) {
             r0y[count0] = y*calib;
             r0z[count0] = z*calib;
             count0++;
-        }
+        }else
 
         if(readFIFO(h1, &x, &y, &z, data)){
             t = time_time();
@@ -244,7 +244,7 @@ int main(int argc, char *argv[]) {
             count1++;
         }
         
-        // Test if overflow 
+        //~ // Test if overflow 
         //~ readBytes(h0, STATUS, buff, 2);
         //~ status0 = buff[1];
     
@@ -271,29 +271,15 @@ int main(int argc, char *argv[]) {
         return 0;
     }
     
-    //Alignment and Downsampling============================
-    int samples = vFreq*vTime;
-    float delay = 1.0/vFreq;
-    
-    double *at, *a0x, *a0y, *a0z, *a1x, *a1y, *a1z;
-    at = malloc(samples * sizeof(double));
-    a0x = malloc(samples * sizeof(double));
-    a0y = malloc(samples * sizeof(double));
-    a0z = malloc(samples * sizeof(double));
-    a1x = malloc(samples * sizeof(double));
-    a1y = malloc(samples * sizeof(double));
-    a1z = malloc(samples * sizeof(double));
-    
-    alignData(r0t, r0x, r0y, r0z, at, a0x, a0y, a0z, samples, count0, delay);
-    alignData(r1t, r1x, r1y, r1z, at, a1x, a1y, a1z, samples, count1, delay);
-    
-    
     //Write in File
     FILE *f;
     f = fopen(vSave, "w");
-    fprintf(f, "time, x0, y0, z0, x1, y1, z1 \n");
-    for (int i = 0; i < samples; i++) {
-        fprintf(f, "%.5f, %.5f, %.5f, %.5f, %.5f, %.5f, %.5f  \n", at[i], a0x[i], a0y[i], a0z[i], a1x[i], a1y[i], a1z[i]);
+    fprintf(f, "time, x, y, z \n");
+    for (int i = 0; i < count0; i++) {
+        fprintf(f, "%.6f, %.6f, %.6f, %.6f\n", r0t[i], r0x[i], r0y[i], r0z[i]);
+    }
+    for(int i = 0; i < count1; i++){
+        fprintf(f, "%.6f, %.6f, %.6f, %.6f\n", r1t[i], r1x[i], r1y[i], r1z[i]);
     }
     fclose(f);
     
